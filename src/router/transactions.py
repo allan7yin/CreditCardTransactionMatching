@@ -27,6 +27,6 @@ async def processBatchTransactions(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.post("/")
-async def test():
-    print("hello world")
+@router.get("/healthcheck")
+async def healthcheck():
+    return "Transactions endpoint is healty"
