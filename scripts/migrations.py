@@ -2,6 +2,7 @@
 from alembic import command
 from alembic.config import Config
 
+
 def start():
     print("Hello")
 
@@ -14,6 +15,7 @@ def main(migration_message):
 
     # Upgrade the database to the latest version
     command.upgrade(alembic_cfg, "head")
+
 
 if __name__ == "__main__":
     import sys
