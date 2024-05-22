@@ -1,5 +1,7 @@
 from typing import Dict
 from ..schema import transaction_schema
+from ..service.rules_service import get_rules
+from sqlalchemy.orm import Session
 
 import logging
 
@@ -10,7 +12,7 @@ This processes a batch of user transactions, computing maximum earn and returnin
 """
 
 
-def process_batch_transactions(transactions_raw: transaction_schema.TransactionListIn):
+def process_batch_transactions(db: Session, transactions_raw: transaction_schema.TransactionListIn):
     logger.info("=== Beginning transaction matching operation ===")
 
     # create vendor map
@@ -19,18 +21,17 @@ def process_batch_transactions(transactions_raw: transaction_schema.TransactionL
         transactions[transaction_in.merchant_code] = transaction_in.amount_cents / 100
 
     # perform dp
-    EARN_RULES: Dict[str, float] = [
-        {"points": 500, "sportcheck": 75, "tim_hortons": 25, "subway": 25},
-        {"points": 300, "sportcheck": 75, "tim_hortons": 25},
-        {"points": 200, "sportcheck": 75},
-        {"points": 150, "sportcheck": 25, "tim_hortons": 10, "subway": 10},
-        {"points": 75, "sportcheck": 25, "tim_hortons": 10},
-        {"points": 75, "sportcheck": 20},
-    ]
+    earn_rules = get_rules(db=db)
+
+    # Extracting a list of Python dictionaries from the raw rules
+    cleaned_rules = []
+    raw_rules = earn_rules.rules
+    for rule in raw_rules:
+        cleaned_rules.append(rule.rule)
 
     def dp(transactions: Dict[str, float]):
         points = sum(transactions.values())
-        for rule in EARN_RULES:
+        for rule in cleaned_rules:
             if validate(rule, transactions):
                 cpy = transactions.copy()
                 for merchant in cpy.keys():
