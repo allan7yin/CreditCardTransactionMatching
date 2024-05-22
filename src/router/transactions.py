@@ -9,12 +9,15 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# create vendor endpoint
-@router.post("/processBatch", response_model=int)
+# create transaction endpoint
+@router.post("/processBatch", response_model=transaction_schema.TransactionOut)
 async def processBatchTransactions(transactions_raw: transaction_schema.TransactionListIn):
     try:
         max_points_earned = transactions_service.process_batch_transactions(transactions_raw)
-        return 0
+        return transaction_schema.TransactionOut(
+            points_earned=max_points_earned,
+            number_of_transactions=len(transactions_raw.transactions)
+        )
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
 
