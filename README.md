@@ -4,8 +4,10 @@
 
 # About
 
-- This is a quick credit card transaction matching solution. The aim is to create a rewards calculation system that calculates the total monthly reward points earned based on a customer's credit card purchases.
-- This simple server has one API endpoint, which consumes a list of transactions, and computes the max earn from that list, for the user that transacted on those transactions.
+- This is a quick credit card transaction matching solution built with [FastAPI](https://fastapi.tiangolo.com/). The aim is to create a rewards calculation system that calculates the total monthly reward points earned based on a customer's credit card purchases.
+- This simple server has 2 API endpoints.
+  - One consumes a list of transactions, and computes the max earn from that list, for the user that transacted on those transactions.
+  - The other allows for the creation of rules, so the system can take on different rules and transactions
 
 # How to Run
 
@@ -55,6 +57,10 @@ Once finished, deactivate the python virtual environment:
 ```bash
 deactivate
 ```
+
+### Alternatively
+
+Built the docker image and run localy.
 
 # API Docs
 

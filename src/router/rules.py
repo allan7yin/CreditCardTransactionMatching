@@ -14,8 +14,6 @@ router = APIRouter(
 # create rules endpoint
 @router.post("/create", response_model=None)
 async def create_rules(rulesIn: rules_schema.RuleListIn, db: Session = Depends(core.get_db)):
-    print(rulesIn)
-    print("here I am")
     try:
         rules_service.create_rules(db=db, rulesIn=rulesIn)
     except Exception:
