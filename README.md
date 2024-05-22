@@ -60,7 +60,12 @@ deactivate
 
 ### Alternatively
 
-Built the docker image and run localy.
+Build the docker image and run localy as follows:
+
+```
+docker build -t allan7yin/transaction-matching-server:latest .
+docker run --name transactionMatching -d -p 8000:8000 allan7yin/transaction-matching-server:latest
+```
 
 # API Docs
 
