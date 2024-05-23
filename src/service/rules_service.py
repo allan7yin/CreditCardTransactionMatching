@@ -1,5 +1,5 @@
 from typing import List
-
+from sqlalchemy import delete
 from ..schema import rules_schema
 from sqlalchemy.orm import Session
 from ..model.rule_model import Rule
@@ -15,6 +15,7 @@ This creates the rules for the rewards system
 """
 def create_rules(db: Session, rulesIn: rules_schema.RuleListIn):
     # upload each rule into the table, convert the rule into JSON and store to sqlite
+    db.execute(delete(Rule))
     logger.info("creating rules")
     for rule in rulesIn.rules:
         json_rule = json.dumps(rule.rule)

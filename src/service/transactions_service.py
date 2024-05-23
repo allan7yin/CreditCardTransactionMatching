@@ -1,7 +1,10 @@
+from collections import defaultdict
+import math
 from typing import Dict
 from ..schema import transaction_schema
 from ..service.rules_service import get_rules
 from sqlalchemy.orm import Session
+import copy
 
 import logging
 
@@ -14,13 +17,14 @@ This processes a batch of user transactions, computing maximum earn and returnin
 
 def process_batch_transactions(db: Session, transactions_raw: transaction_schema.TransactionListIn):
     logger.info("=== Beginning transaction matching operation ===")
-
     # create vendor map
-    transactions: Dict[str, float] = {}
+    transactions = {}
     for transaction_in in transactions_raw.transactions.values():
-        transactions[transaction_in.merchant_code] = transaction_in.amount_cents / 100
+        if transaction_in.merchant_code not in transactions:
+            transactions[transaction_in.merchant_code] = transaction_in.amount_cents / 100
+        else:
+            transactions[transaction_in.merchant_code] += transaction_in.amount_cents / 100
 
-    # perform dp
     earn_rules = get_rules(db=db)
 
     # Extracting a list of Python dictionaries from the raw rules
@@ -28,9 +32,14 @@ def process_batch_transactions(db: Session, transactions_raw: transaction_schema
     raw_rules = earn_rules.rules
     for rule in raw_rules:
         cleaned_rules.append(rule.rule)
-
+        
+    memo = {}
     def dp(transactions: Dict[str, float]):
-        points = sum(transactions.values())
+        points = math.floor(sum(transactions.values()))
+        pts = 0
+        transactions_tuple = tuple(sorted(transactions.items())) 
+        if transactions_tuple in memo:
+            return memo[transactions_tuple]
         for rule in cleaned_rules:
             if validate(rule, transactions):
                 cpy = transactions.copy()
@@ -40,9 +49,13 @@ def process_batch_transactions(db: Session, transactions_raw: transaction_schema
                     cpy[merchant] -= rule[merchant]
                 pts = rule["points"] + dp(cpy)
                 points = max(pts, points)
+
+        memo[transactions_tuple] = points
         return points
 
+
     result = dp(transactions)
+    print(result)
     logger.info("=== Max earn on transactions is %d ===", result)
     return result
 
