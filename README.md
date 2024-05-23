@@ -11,7 +11,24 @@
 
 # How to Run
 
+### Docker
+
+Build the docker image and run localy as follows:
+
+```
+docker build -t allan7yin/transaction-matching-server:latest .
+docker run --name transactionMatching -d -p 8000:8000 allan7yin/transaction-matching-server:latest
+```
+
+Alternatively, we can build the project locally:
+
 ### Virtual Environment
+
+Clone the repo:
+
+```bash
+git clone https://github.com/allan7yin/CreditCardTransactionMatching.git
+```
 
 Launch a Python virtual environment. First navigate to project root directory:
 
@@ -56,15 +73,6 @@ Once finished, deactivate the python virtual environment:
 
 ```bash
 deactivate
-```
-
-### Alternatively
-
-Build the docker image and run localy as follows:
-
-```
-docker build -t allan7yin/transaction-matching-server:latest .
-docker run --name transactionMatching -d -p 8000:8000 allan7yin/transaction-matching-server:latest
 ```
 
 # API Docs
