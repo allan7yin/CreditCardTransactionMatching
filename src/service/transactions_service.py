@@ -55,7 +55,6 @@ def process_batch_transactions(db: Session, transactions_raw: transaction_schema
 
 
     result = dp(transactions)
-    print(result)
     logger.info("=== Max earn on transactions is %d ===", result)
     return result
 
